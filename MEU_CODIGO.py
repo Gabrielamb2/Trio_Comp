@@ -5,6 +5,9 @@ Created on Mon Mar  2 14:27:31 2020
 @author: Fernando
 """
 
+#Alunos: Fernando Fincatti, Ellen Shen e Gabriela Boriero
+#Retas e ponto de fuga
+
 import cv2
 import numpy as np
 import math

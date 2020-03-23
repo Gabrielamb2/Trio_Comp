@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
 
+#Alunos: Fernando Fincatti, Ellen Shen e Gabriela Boriero
+
 
 import rospy
 import numpy as np
