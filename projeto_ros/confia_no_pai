@@ -15,5 +15,5 @@ rosrun topic_tools relay  /camera/rgb/image_raw/compressed /kamera
 
 
 Finalmente 
- rosrun projeto_ros cor.py
- rosrun projeto_ros le_scan.py
+rosrun projeto_ros cor.py
+rosrun projeto_ros le_scan.py

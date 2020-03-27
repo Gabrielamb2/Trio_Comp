@@ -4,18 +4,10 @@
 __author__ = ["Rachel P. B. Moraes", "Igor Montagner", "Fabio Miranda"]
 
 #############################################################################
-import rospy
-import numpy as np
-from geometry_msgs.msg import Twist, Vector3
-from sensor_msgs.msg import LaserScan
 
 
-def scaneou(dado):
-	print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
-	print("Leituras:")
-	global medida
-	medida = np.array(dado.ranges).round(decimals=2)[0]
-	print(medida)
+
+
 	#print("Intensities")
 	#print(np.array(dado.intensities).round(decimals=2))
 #############################################################################
@@ -34,9 +26,11 @@ from geometry_msgs.msg import Twist, Vector3, Pose
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import LaserScan
 import cormodule
 from le_scan import*
 
+medida = -1
 
 bridge = CvBridge()
 
@@ -50,6 +44,21 @@ area = 0.0 # Variavel com a area do maior contorno
 # Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados. 
 # Descarta imagens que chegam atrasadas demais
 check_delay = False 
+
+#############################################################################
+
+
+
+def scaneou(dado):
+	print("Faixa valida: ", dado.range_min , " - ", dado.range_max )
+	print("Leituras:")
+	global medida
+	medida = np.array(dado.ranges).round(decimals=2)[0]
+	print(medida)
+
+	#print("Intensities")
+	#print(np.array(dado.intensities).round(decimals=2))
+#############################################################################
 
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
@@ -118,20 +127,22 @@ if __name__=="__main__":
 					vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
 					velocidade_saida.publish(vel)
 					rospy.sleep(0.1)
-				elif (media[0] < centro[0]):
+					
+				if (media[0] < centro[0]):
 					vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
 					velocidade_saida.publish(vel)
 					rospy.sleep(0.1)
 
-				if medida < 0.20:
-					velocidade = Twist(Vector3(-0.5, 0, 0), Vector3(0, 0, 0))
-					velocidade_saida.publish(velocidade)
-					rospy.sleep(0.55)
-					
-				elif medida > 1.75:
-					velocidade = Twist(Vector3(0.5, 0, 0), Vector3(0, 0, 0))
-					velocidade_saida.publish(velocidade)
-					rospy.sleep(0.55)
-			
+				if media[0] - centro[0] < 5:
+					if medida < 0.20:
+						velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+						velocidade_saida.publish(velocidade)
+						rospy.sleep(0.55)
+						
+					elif medida > 1.75:
+						velocidade = Twist(Vector3(0.5, 0, 0), Vector3(0, 0, 0))
+						velocidade_saida.publish(velocidade)
+						rospy.sleep(0.55)
+				
 	except rospy.ROSInterruptException:
 	    print("Ocorreu uma exceção com o rospy")
