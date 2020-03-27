@@ -1,0 +1,18 @@
+Tenha certeza que você está com o repositório "my_simulation" atualizado
+cd ~/catkin_ws/src/my_simulation
+git pull origin master
+cd ~/catkin_ws
+catkin_make    
+
+
+
+Em um terminal rode 
+roslaunch my_simulation sala404_creepers.launch
+
+
+Em um novo terminal rode 
+rosrun topic_tools relay  /camera/rgb/image_raw/compressed /kamera
+
+
+Finalmente 
+ rosrun exemplos_python cor.py
