@@ -12,10 +12,6 @@ __author__ = ["Rachel P. B. Moraes", "Igor Montagner", "Fabio Miranda"]
 	#print(np.array(dado.intensities).round(decimals=2))
 #############################################################################
 
-
-
-
-
 import rospy
 import numpy as np
 import tf
@@ -116,7 +112,7 @@ if __name__=="__main__":
 	try:
 
 		while not rospy.is_shutdown():
-			#print(maior_area)
+			print(maior_area)
 			print("medida: ",medida)
 			vel = Twist(Vector3(0,0,0), Vector3(0,0,0))
 
@@ -126,36 +122,37 @@ if __name__=="__main__":
 				diferenca = media[0] - centro[0] 
 				print("diferença: ",diferenca)
 
-				if maior_area <= 3500:
+				if maior_area <= 200:
+
+					if media[0] > centro[0]:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.01))
+						velocidade_saida.publish(vel)
+						rospy.sleep(0.01)
+
+				elif maior_area > 200:
+					
+					if media[0] < centro[0]:
+						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.01))
+						velocidade_saida.publish(vel)
+						rospy.sleep(0.1)
 
 					if media[0] > centro[0]:
 						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.01))
 						velocidade_saida.publish(vel)
 						rospy.sleep(0.1)
 
-				elif maior_area > 3500:
-					
-					if media[0] < centro[0]:
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
-						velocidade_saida.publish(vel)
-						rospy.sleep(0.1)
+					if diferenca <= 5:
 
-					if media[0] > centro[0]:
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
-						velocidade_saida.publish(vel)
-						rospy.sleep(0.1)
-
-					if diferenca <= 10:
-
-						if medida < 0.20:
+						if medida <= 0.25:
 							velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
 							velocidade_saida.publish(velocidade)
 							rospy.sleep(0.55)
 								
-						elif medida > 1.75:
-							velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+						elif medida > 0.25:
+							velocidade = Twist(Vector3(0.04, 0, 0), Vector3(0, 0, 0))
 							velocidade_saida.publish(velocidade)
 							rospy.sleep(0.55)
+
 						
 	except rospy.ROSInterruptException:
 	    print("Ocorreu uma exceção com o rospy")
