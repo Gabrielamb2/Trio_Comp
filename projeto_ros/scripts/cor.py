@@ -122,36 +122,49 @@ if __name__=="__main__":
 				diferenca = media[0] - centro[0] 
 				print("diferença: ",diferenca)
 
-				if maior_area <= 200:
 
-					if media[0] > centro[0]:
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.01))
-						velocidade_saida.publish(vel)
-						rospy.sleep(0.01)
+				if medida > 0.50: 
+					if maior_area <= 200:
 
-				elif maior_area > 200:
-					
-					if media[0] < centro[0]:
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,0.01))
-						velocidade_saida.publish(vel)
-						rospy.sleep(0.1)
+						if media[0] > centro[0]:
+							vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
+							velocidade_saida.publish(vel)
+							rospy.sleep(0.01)
 
-					if media[0] > centro[0]:
-						vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.01))
-						velocidade_saida.publish(vel)
-						rospy.sleep(0.1)
+					elif maior_area > 200:
+						
+						if media[0] < centro[0]:
+							vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
+							velocidade_saida.publish(vel)
+							rospy.sleep(0.1)
 
-					if diferenca <= 5:
+						if media[0] > centro[0]:
+							vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
+							velocidade_saida.publish(vel)
+							rospy.sleep(0.1)
 
-						if medida <= 0.25:
-							velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+						if diferenca <= 5:
+
+							#if medida <= 0.25:
+								#velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+								#velocidade_saida.publish(velocidade)
+								#rospy.sleep(0.55)
+									
+							#elif medida > 0.25:
+							velocidade = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
 							velocidade_saida.publish(velocidade)
 							rospy.sleep(0.55)
-								
-						elif medida > 0.25:
-							velocidade = Twist(Vector3(0.03, 0, 0), Vector3(0, 0, 0))
-							velocidade_saida.publish(velocidade)
-							rospy.sleep(0.55)
+				else:
+					if medida >= 0.25:
+						velocidade = Twist(Vector3(0.03, 0, 0), Vector3(0, 0, 0))
+						velocidade_saida.publish(velocidade)
+						rospy.sleep(0.55)
+
+					else:
+						velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+						velocidade_saida.publish(velocidade)
+						rospy.sleep(0.55)
+		
 
 						
 	except rospy.ROSInterruptException:
