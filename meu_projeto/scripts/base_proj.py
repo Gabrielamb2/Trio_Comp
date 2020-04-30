@@ -24,6 +24,7 @@ from std_msgs.msg import Header
 
 import visao_module
 import linha
+import cor
 
 
 bridge = CvBridge()
@@ -162,36 +163,63 @@ if __name__=="__main__":
                 cv2.imshow("cv_image no loop principal", cv_image)
                 cv2.waitKey(1)
 
-                if c[0] is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
-                    diferenca = centro[0] - c[0]
-    
-                    if c[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        print("DIREITA!")
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                if cor.cor == False:
+                    print("COR É FALSE")
+                    if c[0] is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
+                        diferenca = centro[0] - c[0]
+        
+                        if c[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            print("DIREITA!")
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                        elif c[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            print("ESQUERDA!")
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                        if diferenca <= 5: #ALINHADO!
+                            print("FRENTE!")
+                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                    else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
+                        print("PROCURANDO FAIXA AMARELA")
+                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
+                
+                else:
+                    print("COR É TRUE")
+                    if cor.medida > 0.5:
+                        if cor.media[0] < centro[0]:
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,0.1))
+                            velocidade_saida.publish(vel)
+                            rospy.sleep(0.1)
 
-                    elif c[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        print("ESQUERDA!")
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                        if cor.media[0] > centro[0]:
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.1))
+                            velocidade_saida.publish(vel)
+                            rospy.sleep(0.1)
+
+                        if cor.diferenca_cor <= 5:
+                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.55)
+                    else:
+                        velocidade = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
                         velocidade_saida.publish(velocidade)
-                        rospy.sleep(0.1)
+                        rospy.sleep(0.55) 
 
-                    if diferenca <= 8: #ALINHADO!
-                        print("FRENTE!")
-                        velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
-                        velocidade_saida.publish(velocidade)
-                        rospy.sleep(0.1)
+                        if cor.medida <= 0.25:
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.55)
 
-
-                else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
-                    print("PROCURANDO FAIXA AMARELA")
-                    velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
-                    velocidade_saida.publish(velocidade)
-                    rospy.sleep(0.1)
-
-                        
-
+            
             rospy.sleep(0.1)
 
     except rospy.ROSInterruptException:
