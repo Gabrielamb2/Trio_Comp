@@ -20,21 +20,23 @@ from geometry_msgs.msg import Twist, Vector3, Pose, Vector3Stamped
 from ar_track_alvar_msgs.msg import AlvarMarker, AlvarMarkers
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
-
+from sensor_msgs.msg import LaserScan
 
 import visao_module
-import linha
-import cor
+import linha1
 import cormodule
 
 
 bridge = CvBridge()
-ponto_de_fuga = linha.Follower()
+
 cv_image = None
 media = []
 centro = []
 atraso = 1.5E9 # 1 segundo e meio. Em nanossegundos
+ponto = linha1.Follower()
+temp_image = None
 maior_area = None
+medida = None
 
 
 area = 0.0 # Variavel com a area do maior contorno
@@ -57,6 +59,10 @@ tfl = 0
 
 tf_buffer = tf2_ros.Buffer()
 
+def scaneou(dado):
+    global medida
+    medida = np.array(dado.ranges).round(decimals=2)[0]
+    
 
 def recebe(msg):
     global x # O global impede a recriacao de uma variavel local, para podermos usar o x global ja'  declarado
@@ -100,18 +106,18 @@ def recebe(msg):
 
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
-    print("frame")
+    #print("frame")
     global cv_image
     global media
     global centro
     global resultados
+    global temp_image
     global maior_area
 
     now = rospy.get_rostime()
     imgtime = imagem.header.stamp
     lag = now-imgtime # calcula o lag
     delay = lag.nsecs
-    # print("delay ", "{:.3f}".format(delay/1.0E9))
     if delay > atraso and check_delay==True:
         print("Descartando por causa do delay do frame:", delay)
         return 
@@ -120,8 +126,8 @@ def roda_todo_frame(imagem):
         temp_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
         # Note que os resultados já são guardados automaticamente na variável
         # chamada resultados
-        media, centro_descarta, maior_area =  cormodule.identifica_cor(temp_image)
-        centro, saida_net, resultados =  visao_module.processa(temp_image)        
+        centro, saida_net, resultados =  visao_module.processa(temp_image)
+        media, maior_area =  cormodule.identifica_cor(temp_image)        
         for r in resultados:
             # print(r) - print feito para documentar e entender
             # o resultado            
@@ -139,12 +145,14 @@ if __name__=="__main__":
     topico_imagem = "/raspicam/rgb/image_raw/compressed"
 
     recebedor1 = rospy.Subscriber(topico_imagem, CompressedImage, roda_todo_frame, queue_size=4, buff_size = 2**24)
-    #recebedor2 = rospy.Subscriber("/ar_pose_marker", AlvarMarkers, recebe) # Para recebermos notificacoes de que marcadores foram vistos
+    recebedor2 = rospy.Subscriber("/ar_pose_marker", AlvarMarkers, recebe) # Para recebermos notificacoes de que marcadores foram vistos
+    recebedor3 = rospy.Subscriber("/scan", LaserScan, scaneou)
 
-    print("Usando ", topico_imagem)
+    #print("Usando ", topico_imagem)
 
     velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
 
+    tfl = tf2_ros.TransformListener(tf_buffer) #conversao do sistema de coordenadas 
     tolerancia = 25
 
     # Exemplo de categoria de resultados
@@ -155,77 +163,89 @@ if __name__=="__main__":
         # vel = Twist(Vector3(0,0,0), Vector3(0,0,math.pi/10.0))
         
         while not rospy.is_shutdown():
-            for r in resultados:
-                print(r)
+            ##for r in resultados:
+            ##    print(r)
             #velocidade_saida.publish(vel)
 
-            if cv_image is not None:
-                c = ponto_de_fuga.encontra_centro(cv_image)
+            if cv_image is not None and temp_image is not None:
+                cx = ponto.image_callback(temp_image)[0]
                 
                 # Note que o imshow precisa ficar *ou* no codigo de tratamento de eventos *ou* no thread principal, não em ambos
-                cv2.imshow("cv_image no loop principal", cv_image)
+                cv2.imshow("cv_image no loop principal", temp_image)
                 cv2.waitKey(1)
 
-                if cor.cor == False:
-                    print("COR É FALSE")					
-                    if c[0] is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
-                        diferenca = centro[0] - c[0]
-        
-                        if c[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                if maior_area >= 250: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
+                    color = True
+
+                elif maior_area <= 250: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
+                    color = False
+                
+                if color == False: #SE NÃO ECONTROU O CREEPER AINDA...
+                    print("COLOR É FALSE")
+                    if cx is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
+                        diferenca = centro[0] - cx
+
+                        if cx > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                             print("DIREITA!")
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
-
-                        elif c[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                        
+                        elif cx < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                             print("ESQUERDA!")
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
-
+                        
                         if diferenca <= 8: #ALINHADO!
                             print("FRENTE!")
                             velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
-
+                        
                     else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
                         print("PROCURANDO FAIXA AMARELA")
                         velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
-                else:
-                    print("COR É TRUE")
+                
+                else: #CREEPER ENCONTRADO!
+                    print("COLOR É TRUE")
+                    diferenca_cor = abs(media[0] - centro[0])
 
-                    if cor.medida > 0.50:
+                    if medida > 0.5: #CASO O CREEPER ESTEJA LONGE, ANDE ATÉ ELE
                         print("CREEPER DISTANTE!")
-                        if media[0] < centro[0]:
+                        if media[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
                             velocidade_saida.publish(vel)
                             rospy.sleep(0.1)
-
-                        elif media[0] > centro[0]:
+ 
+                        elif media[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                             vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
                             velocidade_saida.publish(vel)
                             rospy.sleep(0.1)
 
-                        if cor.diferenca_cor <=5:
+                        if diferenca_cor <= 5: #ALINHADO!
                             print("ALINHOU COM O CREEPER!")
-                            velocidade = Twist(Vector3(0.05, 0, 0), Vector3(0, 0, 0))
+                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
-                    
-                    else:
+                            
+                    else: #O CREEPER ESTÁ PERTO, APROXIMAR LENTAMENTE
+                        print("CREEPER PERTO!")
                         velocidade = Twist(Vector3(0.03, 0, 0), Vector3(0, 0, 0))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
 
-                        if  cor.medida <= 0.25:
+                        if  medida <= 0.20: #CREEPER PRONTO PARA SER CAPTURADO!
+                            print("PREPARAR A GARRA")
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
-                        
+
             rospy.sleep(0.1)
 
     except rospy.ROSInterruptException:
         print("Ocorreu uma exceção com o rospy")
+
+
