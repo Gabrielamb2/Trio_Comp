@@ -28,7 +28,6 @@ import cormodule
 
 
 bridge = CvBridge()
-
 cv_image = None
 media = []
 centro = []
@@ -37,6 +36,7 @@ ponto = linha1.Follower()
 temp_image = None
 maior_area = None
 medida = None
+capturou = False
 
 
 area = 0.0 # Variavel com a area do maior contorno
@@ -142,7 +142,7 @@ def roda_todo_frame(imagem):
 if __name__=="__main__":
     rospy.init_node("cor")
 
-    topico_imagem = "/raspicam/rgb/image_raw/compressed"
+    topico_imagem = "/camera/rgb/image_raw/compressed"
 
     recebedor1 = rospy.Subscriber(topico_imagem, CompressedImage, roda_todo_frame, queue_size=4, buff_size = 2**24)
     recebedor2 = rospy.Subscriber("/ar_pose_marker", AlvarMarkers, recebe) # Para recebermos notificacoes de que marcadores foram vistos
@@ -174,16 +174,16 @@ if __name__=="__main__":
                 cv2.imshow("cv_image no loop principal", temp_image)
                 cv2.waitKey(1)
 
-                if maior_area >= 250: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
+                if maior_area >= 250 and capturou == False: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
                     color = True
 
-                elif maior_area <= 250: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
+                elif maior_area <= 250 and capturou == False: #CONDIÇÃO PARA DETERMINAR SE O CREEPER DA COR DESEJADA FOI ECONTRADO
                     color = False
                 
                 if color == False: #SE NÃO ECONTROU O CREEPER AINDA...
                     print("COLOR É FALSE")
                     if cx is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
-                        diferenca = centro[0] - cx
+                        diferenca = abs(centro[0] - cx)
 
                         if cx > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                             print("DIREITA!")
@@ -197,7 +197,7 @@ if __name__=="__main__":
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
                         
-                        if diferenca <= 8: #ALINHADO!
+                        if diferenca <= 5: #ALINHADO!
                             print("FRENTE!")
                             velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
@@ -205,11 +205,11 @@ if __name__=="__main__":
                         
                     else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
                         print("PROCURANDO FAIXA AMARELA")
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
+                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
                 
-                else: #CREEPER ENCONTRADO!
+                elif color == True and capturou == False: #CREEPER ENCONTRADO!
                     print("COLOR É TRUE")
                     diferenca_cor = abs(media[0] - centro[0])
 
@@ -227,7 +227,7 @@ if __name__=="__main__":
 
                         if diferenca_cor <= 5: #ALINHADO!
                             print("ALINHOU COM O CREEPER!")
-                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
                             
@@ -237,11 +237,13 @@ if __name__=="__main__":
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
 
-                        if  medida <= 0.20: #CREEPER PRONTO PARA SER CAPTURADO!
+                        if  medida <= 0.25: #CREEPER PRONTO PARA SER CAPTURADO!
                             print("PREPARAR A GARRA")
+                            capturou = True
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
+                            color = False
 
             rospy.sleep(0.1)
 
