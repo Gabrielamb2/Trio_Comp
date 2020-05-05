@@ -197,7 +197,7 @@ if __name__=="__main__":
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
                         
-                        if diferenca <= 5: #ALINHADO!
+                        if diferenca <= 8: #ALINHADO!
                             print("FRENTE!")
                             velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
@@ -238,15 +238,15 @@ if __name__=="__main__":
                         id_certo = True
                         print("ID CERTO CENTRALIZADO!")
                             
-                    if medida <= 0.85 and id_certo == True: #O CREEPER ESTÁ PERTO, APROXIMAR LENTAMENTE
+                    if id_certo == True: #O CREEPER ESTÁ PERTO, APROXIMAR LENTAMENTE
                         print("DEU CEERTOOOOOOSDGNJSGSKDFNDBHBGJNDFJKVCNJBVDSMKFSJHBFNVDM!")
                         if media[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                            vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
                             velocidade_saida.publish(vel)
                             rospy.sleep(0.1)
  
                         elif media[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                            vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
                             velocidade_saida.publish(vel)
                             rospy.sleep(0.1)
 
@@ -263,6 +263,10 @@ if __name__=="__main__":
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(0.1)
+
+                            velocidade = Twist(Vector3(-0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(8)
                             color = False
 
             rospy.sleep(0.1)
