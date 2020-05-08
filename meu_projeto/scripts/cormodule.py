@@ -16,7 +16,7 @@ import smach
 import smach_ros
 
 
-def identifica_cor(frame):
+def identifica_cor(frame, cor_creeper):
     '''
     Segmenta o maior objeto cuja cor é parecida com cor_h (HUE da cor, no espaço HSV).
     '''
@@ -38,9 +38,21 @@ def identifica_cor(frame):
     #segmentado_cor += cv2.inRange(frame_hsv, cor_menor, cor_maior)
 
     #063863
-    cor_menor = np.array([94, 50, 50])
-    cor_maior = np.array([104, 255, 255])
-    segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
+    if cor_creeper == "blue": #COR AZUL IDENTIFICADA
+        cor_menor = np.array([94, 50, 50])
+        cor_maior = np.array([104, 255, 255]) 
+
+        segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
+    elif cor_creeper == "green": #COR VERDE IDENTIFICADA
+        cor_menor = np.array([51, 50, 50])
+        cor_maior = np.array([61, 255, 255])
+        segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
+        
+    elif cor_creeper == "pink": #COR ROSA IDENTIFICADA
+        cor_menor = np.array([140, 50, 50])
+        cor_maior = np.array([150, 255, 255])
+        segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
+
 
     # Note que a notacão do numpy encara as imagens como matriz, portanto o enderecamento é
     # linha, coluna ou (y,x)
