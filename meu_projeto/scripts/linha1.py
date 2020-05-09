@@ -12,8 +12,8 @@ class Follower:
     cx = None
     cy = None
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    lower_yellow = numpy.array([20,  50,  50])
-    upper_yellow = numpy.array([30, 255, 250])
+    lower_yellow = numpy.array([16,  150,  150])
+    upper_yellow = numpy.array([35, 255, 250])
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
     
     # BEGIN CROP
