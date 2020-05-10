@@ -40,8 +40,11 @@ medida = None
 capturou = False
 base_encontrada = False
 bic = False
+creeper = False
+id_certo = False
+color = False
 
-missao = ['blue', 13, 'cat'] 
+missao = ['blue', 23, 'bicycle'] 
 
 cor_creeper = missao[0]
 id_creeper = missao[1]
@@ -222,129 +225,142 @@ if __name__=="__main__":
 
 
                 #PROCURA A FAIXA AMARELA-------------------------------------
-                if base_encontrada == False:
-                    if color == False and bic == False or id != id_creeper: #SE NÃO ECONTROU O CREEPER AINDA...
+                if base_encontrada == False and creeper == False:
+                    orientacao = 0
 
-                        orientacao = 0
+                    print("ESTADO: SEGUINDO FAIXA AMARELA")
 
-                        print("ESTADO: SEGUINDO FAIXA AMARELA")
+                    if cx is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
+                        diferenca = abs(centro[0] - cx)
 
-                        if cx is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
-                            diferenca = abs(centro[0] - cx)
-
-                            if cx > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                                #print("DIREITA!")
-                                orientacao = 1
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.25)
-                            
-                            elif cx < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                                #print("ESQUERDA!")
-                                orientacao = -1
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.25)
-                            
-                            if diferenca <= 20: #ALINHADO!
-                                #print("FRENTE!")
-                                velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.5)
-                            
-                        else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
-
-                            print("ESTADO: PROCURANDO FAIXA AMARELA")
-
-                            if orientacao == 1:
-
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.2)
-
-                                
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.1)
-
-                            elif orientacao == -1:
-
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.2)
-
-                                
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.1)
-
-
-                            
-
-                    #PROCURA A FAIXA AMARELA-------------------------------------
-
-
-
-
-
-                    #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
-
-                    elif color == True and capturou == False and id == id_creeper: #CREEPER ENCONTRADO!
-                        print("ESTADO: BASE ENCONTRADA")
+                        if cx > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            #print("DIREITA!")
+                            orientacao = 1
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.25)
                         
-                        diferenca_cor = abs(centro[0]-y)
+                        elif cx < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            #print("ESQUERDA!")
+                            orientacao = -1
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.25)
+                        
+                        if diferenca <= 50: #ALINHADO!
+                            #print("FRENTE!")
+                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.5)
+                        
+                    else: #CONDIÇÃO CASO O ROBÔ NÃO ENCONTRE A FAIXA AMARELA
 
-                        if x > 0.85 and id == id_creeper: #CASO O CREEPER ESTEJA LONGE, ANDE ATÉ ELE
-                            id_certo = False
-                            if y < -0.05: #CONDIÇÃO DE DESALINHAMENTO
-                                vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
-                                velocidade_saida.publish(vel)
-                                rospy.sleep(0.1)
-    
-                            elif y > 0.05: #CONDIÇÃO DE DESALINHAMENTO
-                                vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
-                                velocidade_saida.publish(vel)
-                                rospy.sleep(0.1)
+                        print("ESTADO: PROCURANDO FAIXA AMARELA")
 
-                            if diferenca_cor <= 320.05 and diferenca_cor >= 319.95: #ALINHADO!
-                                #print("ALINHOU COM O CREEPER!")
-                                velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.1)
+                        if orientacao == 1:
 
-                        else:
-                            id_certo = True
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.2)
+
+                            velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                        elif orientacao == -1:
+
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.2)
+
+                            velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
+
+                    
+                #PROCURA A FAIXA AMARELA-------------------------------------
+
+
+
+
+
+            #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
+                if base_encontrada == False and capturou == False:
+                    if id_certo == False:
+
+                        if color == True and capturou == False and id == id_creeper: #CREEPER ENCONTRADO!
+                            print("ESTADO: CRERPER ENCONTRADO")
+
+                            creeper = True
+                            
+                            diferenca_cor = abs(centro[0]-y)
+
+                            print(x)
+
+                            if x > 1 and id == id_creeper: #CASO O CREEPER ESTEJA LONGE, ANDE ATÉ ELE
+                                id_certo = False
+                                if y < -0.10: #CONDIÇÃO DE DESALINHAMENTO
+                                    vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
+                                    velocidade_saida.publish(vel)
+                                    rospy.sleep(0.1)
+
+                                elif y > 0.10: #CONDIÇÃO DE DESALINHAMENTO
+                                    vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
+                                    velocidade_saida.publish(vel)
+                                    rospy.sleep(0.1)
+
+                                if diferenca_cor <= 320.10 and diferenca_cor >= 319.90: #ALINHADO!
+                                    #print("ALINHOU COM O CREEPER!")
+                                    velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
+                                    velocidade_saida.publish(velocidade)
+                                    rospy.sleep(0.5)
+
+                            else:
+                                id_certo = True
                                 
-                        if id_certo == True: #O CREEPER ESTÁ PERTO, APROXIMAR LENTAMENTE
-                            if media[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                                vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
-                                velocidade_saida.publish(vel)
-                                rospy.sleep(0.1)
-    
-                            elif media[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                                vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
-                                velocidade_saida.publish(vel)
-                                rospy.sleep(0.1)
+                    elif id_certo == True: #O CREEPER ESTÁ PERTO, APROXIMAR LENTAMENTE
 
-                            if abs(media[0] - centro[0]) < 5: #ALINHADO!
-                                velocidade = Twist(Vector3(0.03, 0, 0), Vector3(0, 0, 0))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.1)
+                        print("TO PERTO")
+                        print(abs(media[0] - centro[0]))
+                        if media[0] > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,-0.05))
+                            velocidade_saida.publish(vel)
+                            rospy.sleep(0.1)
+
+                        elif media[0] < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
+                            vel = Twist(Vector3(0,0,0), Vector3(0,0,0.05))
+                            velocidade_saida.publish(vel)
+                            rospy.sleep(0.1)
+
+                        if abs(media[0] - centro[0]) < 10: #ALINHADO!
+                            velocidade = Twist(Vector3(0.03, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
 
 
-                            if  medida <= 0.25: #CREEPER PRONTO PARA SER CAPTURADO!
-                                #print("PREPARAR A GARRA")
-                                capturou = True
-                                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(0.1)
+                        if  medida <= 0.25: #CREEPER PRONTO PARA SER CAPTURADO!
+                            #print("PREPARAR A GARRA")
+                            capturou = True
+                            color = False
+                            creeper = False
+                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(0.1)
 
-                                velocidade = Twist(Vector3(-0.1, 0, 0), Vector3(0, 0, 0))
-                                velocidade_saida.publish(velocidade)
-                                rospy.sleep(8)
-                                color = False
+                            velocidade = Twist(Vector3(-0.1, 0, 0), Vector3(0, 0, 0))
+                            velocidade_saida.publish(velocidade)
+                            rospy.sleep(8)
+                            
 
-                    #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
+                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
 
 
 
@@ -363,20 +379,20 @@ if __name__=="__main__":
                     rospy.sleep(0.1)
 
                     diferenca_base = abs(centro[0] - x_medio)
+                    print(diferenca_base)
 
                     if x_medio > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
 
                     elif x_medio < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
                         velocidade_saida.publish(velocidade)
                         rospy.sleep(0.1)
 
-                    if diferenca_base <= 5: #ALINHADO!
-
-                        if medida < 0.4:
+                    if diferenca_base <= 40: #ALINHADO!
+                        if medida < 0.6:
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(2)
@@ -385,6 +401,8 @@ if __name__=="__main__":
                             velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(2)
+
+                            print("ESTADO: MISSÃO COMPLETA")
 
 
             #IDENTIFICA A BASE CERTA PARA DEPOSITAR O CREEPER-------------------------------------
