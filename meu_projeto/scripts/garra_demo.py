@@ -93,7 +93,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         ##
         ## First initialize `moveit_commander`_ and a `rospy`_ node:
         moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node('move_group_python_interface_tutorial', anonymous=True)
+        #rospy.init_node('move_group_python_interface_tutorial', anonymous=True)
 
         ## Instantiate a `RobotCommander`_ object. Provides information such as the robot's
         ## kinematic model and the robot's current joint states
@@ -308,7 +308,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         return all_close(joint_goal, current_joints, 0.02)
 
 
-    def go_to_zero_position_goal(self):
+    def inicial(self):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
         # reason not to.
@@ -322,7 +322,42 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## end-effector:
         
 
-        init_position = (0.173, 0.0, 0.32)
+        init_position = (0.194, 0.0, 0.303)
+
+
+        move_group.set_position_target(init_position)
+        move_group.set_goal_position_tolerance(0.03)
+
+        ## Now, we call the planner to compute the plan and execute it.
+        plan = move_group.go(wait=True)
+        # Calling `stop()` ensures that there is no residual movement
+        move_group.stop()
+        # It is always good to clear your targets after planning with poses.
+        # Note: there is no equivalent function for clear_joint_value_targets()
+        # move_group.clear_pose_targets()
+
+        ## END_SUB_TUTORIAL
+
+        # For testing:
+        # Note that since this section of code will not be included in the tutorials
+        # we use the class variable rather than the copied state variable
+        current_pose = self.move_group.get_current_pose().pose
+        return True #all_close(pose_goal, current_pose, 0.03)
+    
+    def final(self):
+        # Copy class variables to local variables to make the web tutorials more clear.
+        # In practice, you should use the class variables directly unless you have a good
+        # reason not to.
+        move_group = self.move_group
+
+        ## BEGIN_SUB_TUTORIAL plan_to_pose
+        ##
+        ## Planning to a Pose Goal
+        ## ^^^^^^^^^^^^^^^^^^^^^^^
+        ## We can plan a motion for this group to a desired pose for the
+        ## end-effector:
+
+        init_position = (0.15, 0.0, 0.35)
 
 
         move_group.set_position_target(init_position)
@@ -344,7 +379,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         current_pose = self.move_group.get_current_pose().pose
         return True #all_close(pose_goal, current_pose, 0.03)
 
-    def go_to_home_position_goal(self):
+    def pega_creeper(self):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
         # reason not to.
@@ -358,7 +393,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## end-effector:
         
 
-        home_position = (0.046, 0.0, 0.345)
+        home_position = (0.298, 0.0, 0.243)
 
 
         move_group.set_position_target(home_position)
@@ -451,42 +486,58 @@ def main():
     print("\n----------------------------------------------------------")
     print("\nPress Ctrl-D to exit at any time\n")
     print("\n============ Press `Enter` to begin the tutorial by setting up the moveit_commander ...\n")
-    raw_input()
+    #raw_input()
     tutorial = MoveGroupPythonIntefaceTutorial()
 
-    print("\n============ Press `Enter` to go to init joint state ...\n")
-    raw_input()
-    tutorial.go_to_init_joint_state()
+    #print("\n============ Press `Enter` to go to init joint state ...\n")
+    #raw_input()
+    #tutorial.inicial()
+    #rospy.sleep(0.2)
 
-
-    print("\n============ Press `Enter` to go to home joint state ...\n")
-    raw_input()
-    tutorial.go_to_home_joint_state()
-
-    print("\n============ Press `Enter` to open gripper  ...\n")
-    raw_input()
     tutorial.open_gripper()
+    rospy.sleep(0.2)
+    print("ABRIU GARRA")
 
-    print("\n============ Press `Enter` to close gripper  ...\n")
-    raw_input()
+    tutorial.pega_creeper()
+    rospy.sleep(0.2)
+    print("POSIÇÃO PEGA CREEPER")
+
     tutorial.close_gripper()
+    rospy.sleep(0.2)
+    print("FECHOU GARRA")
 
-    print("\n============ Press `Enter` to go to init goal ...\n")
-    raw_input()
-    tutorial.go_to_zero_position_goal()
+    tutorial.final()
+    rospy.sleep(0.2)
 
 
-    print("\n============ Press `Enter` to go to home goal ...\n")
-    raw_input()
-    tutorial.go_to_home_position_goal()
+    #print("\n============ Press `Enter` to go to home joint state ...\n")
+    #raw_input()
+    #tutorial.go_to_home_joint_state()
 
-    print("\n============ Press `Enter` to open gripper  ...\n")
-    raw_input()
-    tutorial.open_gripper()
+    #print("\n============ Press `Enter` to open gripper  ...\n")
+    #raw_input()
+    #tutorial.open_gripper()
 
-    print("\n============ Press `Enter` to close gripper  ...\n")
-    raw_input()
-    tutorial.close_gripper()
+    #print("\n============ Press `Enter` to close gripper  ...\n")
+    #raw_input()
+    #tutorial.close_gripper()
+
+    #print("\n============ Press `Enter` to go to init goal ...\n")
+    #raw_input()
+    #tutorial.go_to_zero_position_goal()
+
+
+    #print("\n============ Press `Enter` to go to home goal ...\n")
+    #raw_input()
+    #tutorial.go_to_home_position_goal()
+
+    #print("\n============ Press `Enter` to open gripper  ...\n")
+    #raw_input()
+    #tutorial.open_gripper()
+
+    #print("\n============ Press `Enter` to close gripper  ...\n")
+    #raw_input()
+    #tutorial.close_gripper()
 
 
 
