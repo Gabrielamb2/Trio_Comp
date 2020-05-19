@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding:utf-8 -*-
 
-
 import rospy
 import numpy as np
 import tf
@@ -29,14 +28,6 @@ def identifica_cor(frame, cor_creeper):
     frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
 
-    #cor_menor = np.array([0, 50, 50])
-    #cor_maior = np.array([8, 255, 255])
-    #segmentado_cor = cv2.inRange(frame_hsv, cor_menor, cor_maior)
-
-    #cor_menor = np.array([172, 50, 50])
-    #cor_maior = np.array([180, 255, 255])
-    #segmentado_cor += cv2.inRange(frame_hsv, cor_menor, cor_maior)
-
     #063863
     if cor_creeper == "blue": #COR AZUL IDENTIFICADA
         cor_menor = np.array([94, 50, 50])
@@ -63,8 +54,6 @@ def identifica_cor(frame, cor_creeper):
     def cross(img_rgb, point, color, width,length):
         cv2.line(img_rgb, (point[0] - length/2, point[1]),  (point[0] + length/2, point[1]), color ,width, length)
         cv2.line(img_rgb, (point[0], point[1] - length/2), (point[0], point[1] + length/2),color ,width, length) 
-
-
 
     # A operação MORPH_CLOSE fecha todos os buracos na máscara menores 
     # que um quadrado 7x7. É muito útil para juntar vários 
@@ -99,9 +88,5 @@ def identifica_cor(frame, cor_creeper):
     font = cv2.FONT_HERSHEY_COMPLEX_SMALL
     cv2.putText(frame,"{:d} {:d}".format(*media),(20,100), 1, 4,(255,255,255),2,cv2.LINE_AA)
     cv2.putText(frame,"{:0.1f}".format(maior_contorno_area),(20,50), 1, 4,(255,255,255),2,cv2.LINE_AA)
-
-   # cv2.imshow('video', frame)
-   # cv2.imshow('seg', segmentado_cor)
-   # cv2.waitKey(1)
 
     return media, maior_contorno_area

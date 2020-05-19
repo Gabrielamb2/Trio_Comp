@@ -96,8 +96,8 @@ if __name__ == "__main__":
     #cap = cv2.VideoCapture('hall_box_battery_1024.mp4')
     cap = cv2.VideoCapture(0)
 
-    print("Known classes")
-    print(CLASSES)
+    #print("Known classes")
+    #print(CLASSES)
 
     while(True):
         # Capture frame-by-frame

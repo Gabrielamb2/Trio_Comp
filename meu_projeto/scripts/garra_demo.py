@@ -138,28 +138,28 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## ^^^^^^^^^^^^^^^^^^^^^^^^^
         # We can get the name of the reference frame for this robot:
         planning_frame = move_group.get_planning_frame()
-        print("============ Planning frame: %s" % planning_frame)
+        #print("============ Planning frame: %s" % planning_frame)
 
         planning_frame_gripper = gripper_group.get_planning_frame()
-        print("============ Planning frame for gripper: {}".format(planning_frame_gripper))    
+        #print("============ Planning frame for gripper: {}".format(planning_frame_gripper))    
 
         # We can also print the name of the end-effector link for this group:
         eef_link = move_group.get_end_effector_link()
-        print("============ End effector link: %s" % eef_link)
+        #print("============ End effector link: %s" % eef_link)
 
 
         # We can also print the name of the end-effector link for this group:
         eef_link_gripper = gripper_group.get_end_effector_link()
-        print("============ End effector link: %s" % eef_link_gripper)
+        #print("============ End effector link: %s" % eef_link_gripper)
 
         # We can get a list of all the groups in the robot:
         group_names = robot.get_group_names()
-        print("============ Available Planning Groups:", robot.get_group_names())
+        #print("============ Available Planning Groups:", robot.get_group_names())
 
         # Sometimes for debugging it is useful to print the entire state of the
         # robot:
-        print("============ Printing robot state")
-        print(robot.get_current_state())
+        #print("============ Printing robot state")
+        #print(robot.get_current_state())
         ## END_SUB_TUTORIAL
 
         # Misc variables
@@ -221,7 +221,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## thing we want to do is move it to a slightly better configuration.
         # We can get the joint values from the group and adjust some of the values:
         current_position = move_group.get_current_joint_values()
-        print("Current gripper position", current_position)
+        #print("Current gripper position", current_position)
         
         open_angles =  (0.019,0.019)
         
@@ -256,7 +256,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         current_position = move_group.get_current_joint_values()
 
         current_position = move_group.get_current_joint_values()
-        print("Current gripper position", current_position)
+        #print("Current gripper position", current_position)
         
         close_angles =  (-0.01, -0.01)
         
@@ -322,7 +322,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## end-effector:
         
 
-        init_position = (0.194, 0.0, 0.303)
+        init_position = (0.14, 0.0, 0.303)
 
 
         move_group.set_position_target(init_position)
@@ -337,12 +337,13 @@ class MoveGroupPythonIntefaceTutorial(object):
         # move_group.clear_pose_targets()
 
         ## END_SUB_TUTORIAL
-
+        print("QUALQUER COISA")
         # For testing:
         # Note that since this section of code will not be included in the tutorials
         # we use the class variable rather than the copied state variable
         current_pose = self.move_group.get_current_pose().pose
         return True #all_close(pose_goal, current_pose, 0.03)
+        
     
     def final(self):
         # Copy class variables to local variables to make the web tutorials more clear.
@@ -481,11 +482,11 @@ class MoveGroupPythonIntefaceTutorial(object):
 
 def main():
   try:
-    print("\n----------------------------------------------------------")
-    print("\nWelcome to the MoveIt MoveGroup Python Interface Tutorial")
-    print("\n----------------------------------------------------------")
-    print("\nPress Ctrl-D to exit at any time\n")
-    print("\n============ Press `Enter` to begin the tutorial by setting up the moveit_commander ...\n")
+    #print("\n----------------------------------------------------------")
+    #print("\nWelcome to the MoveIt MoveGroup Python Interface Tutorial")
+    #print("\n----------------------------------------------------------")
+    #print("\nPress Ctrl-D to exit at any time\n")
+    #print("\n============ Press `Enter` to begin the tutorial by setting up the moveit_commander ...\n")
     #raw_input()
     tutorial = MoveGroupPythonIntefaceTutorial()
 
@@ -506,7 +507,7 @@ def main():
     rospy.sleep(0.2)
     print("FECHOU GARRA")
 
-    tutorial.final()
+    tutorial.inicial()
     rospy.sleep(0.2)
 
 
@@ -538,10 +539,6 @@ def main():
     #print("\n============ Press `Enter` to close gripper  ...\n")
     #raw_input()
     #tutorial.close_gripper()
-
-
-
-
 
   except rospy.ROSInterruptException:
     return
