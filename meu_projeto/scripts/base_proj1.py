@@ -51,7 +51,7 @@ creeper = False
 id_certo = False
 color = False
 orientacao = None
-missao = ['blue', 11, 'cat'] 
+missao = ["green", 21, "dog"] 
 
 cor_creeper = missao[0]
 id_creeper = missao[1]
@@ -191,33 +191,35 @@ if __name__=="__main__":
                 cv2.imshow("cv_image no loop principal", temp_image)
                 cv2.waitKey(1)
 
+                print("BIC", bic)
+                print("BASE", base_encontrada)
 
-                # IDENTIFICA A BASE COM O OBJETO DESEJADO-------------------------------------
+                # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
 
                 bic, x_medio = estacao_true.printa_resultado(resultados,objeto,capturou)
 
-                # IDENTIFICA A BASE COM O OBJETO DESEJADO------------------------------------- 
+                # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
 
 
-                # VERIFICA A ÁREA DO CREEPER-------------------------------------
+                # VERIFICA A ÁREA DO CREEPER---------------------------------------------------------
 
                 color = area_creeper.calcula_area(maior_area,capturou)
 
-                # VERIFICA A ÁREA DO CREEPER------------------------------------
+                # VERIFICA A ÁREA DO CREEPER---------------------------------------------------------
 
 
-                #PROCURA A FAIXA AMARELA-------------------------------------
+                #PROCURA A FAIXA AMARELA-------------------------------------------------------------
 
                 segue_faixa_amarela.procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida, orientacao)
                 
-                #PROCURA A FAIXA AMARELA-------------------------------------
+                #PROCURA A FAIXA AMARELA-------------------------------------------------------------
 
 
-                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
+                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS---------------------------------------
                 
                 capturou, color, creeper, id_certo  = identifica_creeper.encontra_creeper(id, creeper, base_encontrada, capturou, id_certo, color, id_creeper, x, y, centro, medida, media, velocidade_saida)
                     
-                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS-------------------------------------
+                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS---------------------------------------
 
 
 
@@ -236,7 +238,6 @@ if __name__=="__main__":
                     rospy.sleep(0.1)
 
                     diferenca_base = abs(centro[0] - x_medio)
-                    print(diferenca_base)
 
                     if x_medio > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                         velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
@@ -253,6 +254,8 @@ if __name__=="__main__":
                             velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(2)
+
+                            garra.acabou()
 
                             print("ESTADO: MISSÃO COMPLETA")
                         

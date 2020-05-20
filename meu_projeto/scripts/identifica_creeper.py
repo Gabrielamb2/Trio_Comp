@@ -9,7 +9,6 @@ def encontra_creeper(id, creeper, base_encontrada, capturou, id_certo, color, id
     if base_encontrada == False and capturou == False:
 
         if id_certo == False:
-            print(color, id, id_creeper)
             
             if color == True and id == id_creeper: #CREEPER ENCONTRADO!
                 
@@ -30,7 +29,6 @@ def encontra_creeper(id, creeper, base_encontrada, capturou, id_certo, color, id
                     
                     diferenca_cor = abs(centro[0]-y)
 
-                    print(x)
 
                     if x > 1 and id == id_creeper: #CASO O CREEPER ESTEJA LONGE, ANDE ATÉ ELE
                         id_certo = False

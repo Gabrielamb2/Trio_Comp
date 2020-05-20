@@ -9,7 +9,7 @@ def procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida
 
         if cx is not None: #CONDIÇÃO CASO O ROBÔ ENCONTRE A FAIXA AMARELA
             diferenca = abs(centro[0] - cx)
-            print("ESTADO: SEGUINDO FAIXA AMARELA", orientacao)
+            print("ESTADO: SEGUINDO FAIXA AMARELA")
 
             if cx > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                 #print("DIREITA!")

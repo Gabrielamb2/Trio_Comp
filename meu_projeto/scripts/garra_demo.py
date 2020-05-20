@@ -121,8 +121,8 @@ class MoveGroupPythonIntefaceTutorial(object):
         # gripper_sub_group = moveit_commander.MoveGroupCommander(gripper_sub_name)
 
         ## Print: Methods available in move_group
-        print("Methods available in move_group")
-        print(dir(move_group))
+        #print("Methods available in move_group")
+        #print(dir(move_group))
 
         ## Create a `DisplayTrajectory`_ ROS publisher which is used to display
         ## trajectories in Rviz:
@@ -337,7 +337,6 @@ class MoveGroupPythonIntefaceTutorial(object):
         # move_group.clear_pose_targets()
 
         ## END_SUB_TUTORIAL
-        print("QUALQUER COISA")
         # For testing:
         # Note that since this section of code will not be included in the tutorials
         # we use the class variable rather than the copied state variable
@@ -436,6 +435,19 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## END_SUB_TUTORIAL
 
 
+    def acabou():
+      try:
+        tutorial_acabou = MoveGroupPythonIntefaceTutorial()
+
+        tutorial_acabou.open_gripper()
+        rospy.sleep(0.2)
+        print("ABRIU GARRA")
+
+
+      except rospy.ROSInterruptException:
+        return
+      except KeyboardInterrupt:
+        return
     def wait_for_state_update(self, box_is_known=False, box_is_attached=False, timeout=4):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
@@ -480,20 +492,10 @@ class MoveGroupPythonIntefaceTutorial(object):
 
 
 
+
 def main():
   try:
-    #print("\n----------------------------------------------------------")
-    #print("\nWelcome to the MoveIt MoveGroup Python Interface Tutorial")
-    #print("\n----------------------------------------------------------")
-    #print("\nPress Ctrl-D to exit at any time\n")
-    #print("\n============ Press `Enter` to begin the tutorial by setting up the moveit_commander ...\n")
-    #raw_input()
     tutorial = MoveGroupPythonIntefaceTutorial()
-
-    #print("\n============ Press `Enter` to go to init joint state ...\n")
-    #raw_input()
-    #tutorial.inicial()
-    #rospy.sleep(0.2)
 
     tutorial.open_gripper()
     rospy.sleep(0.2)
@@ -509,36 +511,6 @@ def main():
 
     tutorial.inicial()
     rospy.sleep(0.2)
-
-
-    #print("\n============ Press `Enter` to go to home joint state ...\n")
-    #raw_input()
-    #tutorial.go_to_home_joint_state()
-
-    #print("\n============ Press `Enter` to open gripper  ...\n")
-    #raw_input()
-    #tutorial.open_gripper()
-
-    #print("\n============ Press `Enter` to close gripper  ...\n")
-    #raw_input()
-    #tutorial.close_gripper()
-
-    #print("\n============ Press `Enter` to go to init goal ...\n")
-    #raw_input()
-    #tutorial.go_to_zero_position_goal()
-
-
-    #print("\n============ Press `Enter` to go to home goal ...\n")
-    #raw_input()
-    #tutorial.go_to_home_position_goal()
-
-    #print("\n============ Press `Enter` to open gripper  ...\n")
-    #raw_input()
-    #tutorial.open_gripper()
-
-    #print("\n============ Press `Enter` to close gripper  ...\n")
-    #raw_input()
-    #tutorial.close_gripper()
 
   except rospy.ROSInterruptException:
     return
