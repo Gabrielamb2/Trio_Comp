@@ -51,7 +51,7 @@ creeper = False
 id_certo = False
 color = False
 orientacao = None
-missao = ["green", 21, "dog"] 
+missao = ["pink", 12, "bicycle"] 
 
 cor_creeper = missao[0]
 id_creeper = missao[1]
@@ -193,6 +193,7 @@ if __name__=="__main__":
 
                 print("BIC", bic)
                 print("BASE", base_encontrada)
+                print("Orientação:", orientacao)
 
                 # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
 
@@ -210,7 +211,7 @@ if __name__=="__main__":
 
                 #PROCURA A FAIXA AMARELA-------------------------------------------------------------
 
-                segue_faixa_amarela.procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida, orientacao)
+                orientacao = segue_faixa_amarela.procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida, orientacao)
                 
                 #PROCURA A FAIXA AMARELA-------------------------------------------------------------
 
@@ -255,10 +256,13 @@ if __name__=="__main__":
                             velocidade_saida.publish(velocidade)
                             rospy.sleep(2)
 
-                            garra.acabou()
-
+                            garra.inicial()
+                            garra.pega_creeper()
+                            garra.open_gripper()
+                            
                             print("ESTADO: MISSÃO COMPLETA")
-                        
+                            
+                            break
                         else:    
                             velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
                             velocidade_saida.publish(velocidade)

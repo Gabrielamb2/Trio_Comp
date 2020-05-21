@@ -37,33 +37,33 @@ def procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida
 
             if orientacao == 1:
 
-                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
-                velocidade_saida.publish(velocidade)
-                rospy.sleep(0.2)
+                #velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.1))
+                #velocidade_saida.publish(velocidade)
+                #rospy.sleep(0.2)
 
-                velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                velocidade = Twist(Vector3(0.0, 0, 0), Vector3(0, 0, -0.1))
                 velocidade_saida.publish(velocidade)
                 rospy.sleep(0.1)
 
-                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
-                velocidade_saida.publish(velocidade)
-                rospy.sleep(0.1)
+                #velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
+                #velocidade_saida.publish(velocidade)
+                #rospy.sleep(0.1)
 
             elif orientacao == -1:
 
-                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
-                velocidade_saida.publish(velocidade)
-                rospy.sleep(0.2)
+                #velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.1))
+                #velocidade_saida.publish(velocidade)
+                #rospy.sleep(0.2)
 
-                velocidade = Twist(Vector3(0.07, 0, 0), Vector3(0, 0, 0))
+                velocidade = Twist(Vector3(0.00, 0, 0), Vector3(0, 0, 0.1))
                 velocidade_saida.publish(velocidade)
-                rospy.sleep(0.1)
+                rospy.sleep(0.25)
 
-                velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
-                velocidade_saida.publish(velocidade)
-                rospy.sleep(0.1)
+                #velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
+                #velocidade_saida.publish(velocidade)
+                #rospy.sleep(0.1)
 
-    return 
+    return orientacao
 
 
 
