@@ -33,6 +33,7 @@ import estacao_true
 import area_creeper
 import segue_faixa_amarela
 import identifica_creeper
+import segue_base
 
 garra = garra_demo.MoveGroupPythonIntefaceTutorial()
 bridge = CvBridge()
@@ -53,6 +54,7 @@ color = False
 orientacao = None
 procura_base = False
 x_medio_t = 0
+missao_concluida = False
 
 missao = ["green", 21, "dog"] 
 
@@ -152,15 +154,12 @@ def roda_todo_frame(imagem):
         centro, temp_image, resultados =  visao_module.processa(temp_image)
         media, maior_area =  cormodule.identifica_cor(temp_image, cor_creeper)        
         for r in resultados:
-            print(r)
             if objeto == r[0]:
                 procura_base = True
                 ponto_x1 = int(r[2][0])
                 ponto_x2 = int(r[3][0])
                 x_medio_t = int((ponto_x1+ponto_x2)/2)
-            
-            #print(r) #- print feito para documentar e entender
-            # o resultado            
+                     
             
 
         depois = time.clock()
@@ -203,85 +202,24 @@ if __name__=="__main__":
                 cv2.imshow("cv_image no loop principal", temp_image)
                 cv2.waitKey(1)
 
-                #print("BIC", bic)
-                print("X_MEDIO_T", x_medio_t)
-                #print("Orientação:", orientacao)
-
                 # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
-
                 bic, x_medio, procura_base = estacao_true.printa_resultado(procura_base,objeto,capturou,x_medio_t)
-
-                # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
-
-
+                
                 # VERIFICA A ÁREA DO CREEPER---------------------------------------------------------
-
                 color = area_creeper.calcula_area(maior_area,capturou)
-
-                # VERIFICA A ÁREA DO CREEPER---------------------------------------------------------
-
-
+               
                 #PROCURA A FAIXA AMARELA-------------------------------------------------------------
-
                 orientacao = segue_faixa_amarela.procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida, orientacao)
-                
-                #PROCURA A FAIXA AMARELA-------------------------------------------------------------
-
-
+               
                 #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS---------------------------------------
-                
                 capturou, color, creeper, id_certo  = identifica_creeper.encontra_creeper(id, creeper, base_encontrada, capturou, id_certo, color, id_creeper, x, y, centro, medida, media, velocidade_saida)
-                    
-                #IDENTIFICA O CREEPER DE COR CERTA E ID CERTOS---------------------------------------
-
-
-
-
-
+                
                 #IDENTIFICA A BASE CERTA PARA DEPOSITAR O CREEPER-------------------------------------
+                base_encontrada, missao_concluida = segue_base.encontrou_base_certa(capturou, bic, base_encontrada, x_medio, medida,centro, velocidade_saida, missao_concluida)
+                
 
-                if capturou == True and bic == True:
-
-                    print("ESTADO: BASE ENCONTRADA")
-
-                    base_encontrada = True
-
-                    velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-                    velocidade_saida.publish(velocidade)
-                    rospy.sleep(0.1)
-
-                    diferenca_base = abs(centro[0] - x_medio)
-                    print(diferenca_base)
-
-                    if x_medio > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))
-                        velocidade_saida.publish(velocidade)
-                        rospy.sleep(0.1)
-
-                    elif x_medio < centro[0]: #CONDIÇÃO DE DESALINHAMENTO
-                        velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0.05))
-                        velocidade_saida.publish(velocidade)
-                        rospy.sleep(0.1)
-
-                    if diferenca_base <= 40: #ALINHADO!
-                        if medida < 0.6:
-                            velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-                            velocidade_saida.publish(velocidade)
-                            rospy.sleep(2)
-
-                            garra.inicial()
-                            garra.pega_creeper()
-                            garra.open_gripper()
-                            
-                            print("ESTADO: MISSÃO COMPLETA")
-                            
-                            break
-                        else:    
-                            velocidade = Twist(Vector3(0.1, 0, 0), Vector3(0, 0, 0))
-                            velocidade_saida.publish(velocidade)
-                            rospy.sleep(2)
-
-            #IDENTIFICA A BASE CERTA PARA DEPOSITAR O CREEPER-------------------------------------
+                if missao_concluida == True:
+                    break
 
             rospy.sleep(0.1)
 
