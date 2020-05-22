@@ -41,7 +41,7 @@ def procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida
                 #velocidade_saida.publish(velocidade)
                 #rospy.sleep(0.2)
 
-                velocidade = Twist(Vector3(0.0, 0, 0), Vector3(0, 0, -0.1))
+                velocidade = Twist(Vector3(0.01, 0, 0), Vector3(0, 0, -0.1))
                 velocidade_saida.publish(velocidade)
                 rospy.sleep(0.1)
 
@@ -55,7 +55,7 @@ def procura_faixa_amarela(base_encontrada, creeper, cx, centro, velocidade_saida
                 #velocidade_saida.publish(velocidade)
                 #rospy.sleep(0.2)
 
-                velocidade = Twist(Vector3(0.00, 0, 0), Vector3(0, 0, 0.1))
+                velocidade = Twist(Vector3(0.01, 0, 0), Vector3(0, 0, 0.1))
                 velocidade_saida.publish(velocidade)
                 rospy.sleep(0.25)
 

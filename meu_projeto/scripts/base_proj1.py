@@ -44,14 +44,17 @@ ponto = linha1.Follower()
 temp_image = None
 maior_area = None
 medida = None
-capturou = False
+capturou = True
 base_encontrada = False
 bic = False
 creeper = False
 id_certo = False
 color = False
 orientacao = None
-missao = ["pink", 12, "bicycle"] 
+procura_base = False
+x_medio_t = 0
+
+missao = ["green", 21, "dog"] 
 
 cor_creeper = missao[0]
 id_creeper = missao[1]
@@ -131,6 +134,8 @@ def roda_todo_frame(imagem):
     global resultados
     global temp_image
     global maior_area
+    global procura_base 
+    global x_medio_t
 
     now = rospy.get_rostime()
     imgtime = imagem.header.stamp
@@ -147,9 +152,16 @@ def roda_todo_frame(imagem):
         centro, temp_image, resultados =  visao_module.processa(temp_image)
         media, maior_area =  cormodule.identifica_cor(temp_image, cor_creeper)        
         for r in resultados:
+            print(r)
+            if objeto == r[0]:
+                procura_base = True
+                ponto_x1 = int(r[2][0])
+                ponto_x2 = int(r[3][0])
+                x_medio_t = int((ponto_x1+ponto_x2)/2)
+            
             #print(r) #- print feito para documentar e entender
             # o resultado            
-            pass
+            
 
         depois = time.clock()
         # Desnecessário - Hough e MobileNet já abrem janelas
@@ -191,13 +203,13 @@ if __name__=="__main__":
                 cv2.imshow("cv_image no loop principal", temp_image)
                 cv2.waitKey(1)
 
-                print("BIC", bic)
-                print("BASE", base_encontrada)
-                print("Orientação:", orientacao)
+                #print("BIC", bic)
+                print("X_MEDIO_T", x_medio_t)
+                #print("Orientação:", orientacao)
 
                 # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
 
-                bic, x_medio = estacao_true.printa_resultado(resultados,objeto,capturou)
+                bic, x_medio, procura_base = estacao_true.printa_resultado(procura_base,objeto,capturou,x_medio_t)
 
                 # IDENTIFICA A BASE COM O OBJETO DESEJADO--------------------------------------------
 
@@ -239,6 +251,7 @@ if __name__=="__main__":
                     rospy.sleep(0.1)
 
                     diferenca_base = abs(centro[0] - x_medio)
+                    print(diferenca_base)
 
                     if x_medio > centro[0]: #CONDIÇÃO DE DESALINHAMENTO
                         velocidade = Twist(Vector3(0, 0, 0), Vector3(0, 0, -0.05))

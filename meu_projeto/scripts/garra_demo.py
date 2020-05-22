@@ -393,7 +393,7 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## end-effector:
         
 
-        home_position = (0.298, 0.0, 0.243)
+        home_position = (0.29, 0.0, 0.243)
 
 
         move_group.set_position_target(home_position)
@@ -435,19 +435,6 @@ class MoveGroupPythonIntefaceTutorial(object):
         ## END_SUB_TUTORIAL
 
 
-    def acabou():
-      try:
-        tutorial_acabou = MoveGroupPythonIntefaceTutorial()
-
-        tutorial_acabou.open_gripper()
-        rospy.sleep(0.2)
-        print("ABRIU GARRA")
-
-
-      except rospy.ROSInterruptException:
-        return
-      except KeyboardInterrupt:
-        return
     def wait_for_state_update(self, box_is_known=False, box_is_attached=False, timeout=4):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good

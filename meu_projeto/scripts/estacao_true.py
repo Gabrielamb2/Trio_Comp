@@ -1,23 +1,21 @@
 
 
-def printa_resultado(resultados, objeto, capturou):
+def printa_resultado(procura_base, objeto, capturou, x_medio_t):
+    x_medio = 0
+    #print(r)
+    if capturou == False:
+        procura_base = False
 
-    for r in resultados:
-        x_medio = 0
-        print(r)
-        if r[0] == objeto and capturou == True:
-            bic = True
-            ponto_x1 = int(r[2][0])
-            ponto_x2 = int(r[3][0])
-            x_medio = int((ponto_x1+ponto_x2)/2)
-        
-            return bic, x_medio
+    if procura_base == True and capturou == True:
+        bic = True
+        x_medio = x_medio_t
+        return bic, x_medio, procura_base
 
-        else:
+    else:
+    
+        return False, x_medio, procura_base
         
-            return False, x_medio
-            
-    return False, 0
+    return False, 0, procura_base
     
             
         
