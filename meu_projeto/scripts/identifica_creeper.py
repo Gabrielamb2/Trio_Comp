@@ -12,10 +12,10 @@ def encontra_creeper(id, creeper, base_encontrada, capturou, id_certo, color, id
             
             if color == True and id == id_creeper: #CREEPER ENCONTRADO!
                 
-                if x >= 1.7:
+                if x >= 1.9:
                     creeper = False
 
-                elif x<= 1.8 and x >= 1.6:
+                elif x<= 2 and x >= 1.9:
                     vel = Twist(Vector3(0.1,0,0), Vector3(0,0,0))
                     velocidade_saida.publish(vel)
                     rospy.sleep(0.1)
