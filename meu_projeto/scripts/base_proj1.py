@@ -64,7 +64,6 @@ objeto = missao[2]
 
 area = 0.0 # Variavel com a area do maior contorno
 
-# Só usar se os relógios ROS da Raspberry e do Linux desktop estiverem sincronizados. 
 # Descarta imagens que chegam atrasadas demais
 check_delay = False 
 
@@ -76,7 +75,6 @@ z = 0
 id = 0
 
 frame = "camera_link"
-# frame = "head_camera"  # DESCOMENTE para usar com webcam USB via roslaunch tag_tracking usbcam
 
 tfl = 0
 
@@ -98,38 +96,18 @@ def recebe(msg):
 
         #print(tf_buffer.can_transform(frame, marcador, rospy.Time(0)))
         header = Header(frame_id=marcador)
-        # Procura a transformacao em sistema de coordenadas entre a base do robo e o marcador numero 100
-        # Note que para seu projeto 1 voce nao vai precisar de nada que tem abaixo, a 
-        # Nao ser que queira levar angulos em conta
+        # Procura a transformacao em sistema de coordenadas 
         trans = tf_buffer.lookup_transform(frame, marcador, rospy.Time(0))
         
         # Separa as translacoes das rotacoes
         x = trans.transform.translation.x
         y = trans.transform.translation.y
         z = trans.transform.translation.z
-        # ATENCAO: tudo o que vem a seguir e'  so para calcular um angulo
-        # Para medirmos o angulo entre marcador e robo vamos projetar o eixo Z do marcador (perpendicular) 
-        # no eixo X do robo (que e'  a direcao para a frente)
-        t = transformations.translation_matrix([x, y, z])
-        # Encontra as rotacoes e cria uma matriz de rotacao a partir dos quaternions
-        r = transformations.quaternion_matrix([trans.transform.rotation.x, trans.transform.rotation.y, trans.transform.rotation.z, trans.transform.rotation.w])
-        m = numpy.dot(r,t) # Criamos a matriz composta por translacoes e rotacoes
-        z_marker = [0,0,1,0] # Sao 4 coordenadas porque e'  um vetor em coordenadas homogeneas
-        v2 = numpy.dot(m, z_marker)
-        v2_n = v2[0:-1] # Descartamos a ultima posicao
-        n2 = v2_n/linalg.norm(v2_n) # Normalizamos o vetor
-        x_robo = [1,0,0]
-        cosa = numpy.dot(n2, x_robo) # Projecao do vetor normal ao marcador no x do robo
-        angulo_marcador_robo = math.degrees(math.acos(cosa))
-
-        # Terminamos
-        #print("id: {} x {} y {} z {} angulo {} ".format(id, x,y,z, angulo_marcador_robo))
-
 
 
 # A função a seguir é chamada sempre que chega um novo frame
 def roda_todo_frame(imagem):
-    #print("frame")
+
     global cv_image
     global media
     global centro
@@ -149,8 +127,6 @@ def roda_todo_frame(imagem):
     try:
         antes = time.clock()
         temp_image = bridge.compressed_imgmsg_to_cv2(imagem, "bgr8")
-        # Note que os resultados já são guardados automaticamente na variável
-        # chamada resultados
         centro, temp_image, resultados =  visao_module.processa(temp_image)
         media, maior_area =  cormodule.identifica_cor(temp_image, cor_creeper)        
         for r in resultados:
@@ -163,8 +139,6 @@ def roda_todo_frame(imagem):
             
 
         depois = time.clock()
-        # Desnecessário - Hough e MobileNet já abrem janelas
-        #cv_image = saida_net.copy()
     except CvBridgeError as e:
         print('ex', e)
     
@@ -178,19 +152,13 @@ if __name__=="__main__":
     recebedor2 = rospy.Subscriber("/ar_pose_marker", AlvarMarkers, recebe) # Para recebermos notificacoes de que marcadores foram vistos
     recebedor3 = rospy.Subscriber("/scan", LaserScan, scaneou)
 
-    #print("Usando ", topico_imagem)
-
     velocidade_saida = rospy.Publisher("/cmd_vel", Twist, queue_size = 1)
 
     tfl = tf2_ros.TransformListener(tf_buffer) #conversao do sistema de coordenadas 
     tolerancia = 25
 
-    # Exemplo de categoria de resultados
-    # [('chair', 86.965459585189819, (90, 141), (177, 265))]
 
     try:
-        # Inicializando - por default gira no sentido anti-horário
-        # vel = Twist(Vector3(0,0,0), Vector3(0,0,math.pi/10.0))
         garra.inicial()
         while not rospy.is_shutdown():          
 
